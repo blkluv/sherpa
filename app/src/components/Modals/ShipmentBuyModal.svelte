@@ -9,7 +9,6 @@
 	import { useSignAndSendTransaction } from '$src/utils/wallet/singAndSendTx';
 	import { PublicKey } from '@solana/web3.js';
 	import { get } from 'svelte/store';
-	import Button from '../Buttons/Button.svelte';
 	import { createNotification, updateNotification } from '../Notification/notificationsStore';
 	import SummaryWrapper from '../SummaryWrapper.svelte';
 	import Modal from './Modal.svelte';
@@ -70,31 +69,52 @@
 </script>
 
 <Modal bind:showModal on:backdropClick={() => (showModal = false)}>
-	<h2
-		class="text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center my-7"
-	>
-		Buy Shipment
-	</h2>
-	<SummaryWrapper shipment={summaryData} />
+	<div class="p-2">
+		<h2
+			class="text-xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center mb-8"
+		>
+			Buy Shipment
+		</h2>
 
-	{#if !$userStore.forwarder.registered}
-		<hr class="my-6" />
-		<div class="px-4 text-neutral-600">
-			<p class="px-3 text-center text-sm">
-				You are not registered as a forwarder. Please enter your name to be registered as a
-				forwarder.
-			</p>
+		<SummaryWrapper shipment={summaryData} />
 
-			<input
-				class="mt-4 w-full bg-transparent px-3 py-2 text-sm placeholder-primary placeholder:italic placeholder:text-slate-400 lg:px-4 lg:py-2 lg:text-base rounded-lg border-2 border-gradient-to-r from-primary to-secondary"
-				type="text"
-				bind:value={$userStore.forwarder.name}
-				placeholder="Enter forwarder name to be registered"
-			/>
+		<!-- <hr class="my-7" /> -->
+
+		{#if !$userStore.forwarder.registered}
+			<div class="mt-10 space-y-3">
+				<div class="flex items-center justify-between px-1">
+					<h3 class="text-[11px] font-black text-gray-400 uppercase tracking-wider">
+						New Forwarder Name
+					</h3>
+					<span
+						class="text-[10px] text-secondary font-bold bg-secondary-50 px-2 py-0.5 rounded-full"
+					>
+						Required
+					</span>
+				</div>
+
+				<div class="relative">
+					<input
+						class="w-full bg-gray-100/70 px-5 py-3.5 text-sm rounded-2xl border-2 border-transparent transition-all placeholder:text-gray-400 font-medium"
+						type="text"
+						bind:value={$userStore.forwarder.name}
+						placeholder="Business or Courier name"
+					/>
+				</div>
+
+				<p class="px-1 text-[10px] text-gray-400 leading-relaxed italic">
+					You'll be registered automatically upon purchase.
+				</p>
+			</div>
+		{/if}
+
+		<div class="mt-10 space-y-4">
+			<button
+				class="w-full py-3 rounded-full bg-gradient-to-r from-primary to-secondary text-white text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] active:scale-95 transition-all duration-200"
+				on:click={handleBuyClick}
+			>
+				Confirm Purchase
+			</button>
 		</div>
-	{/if}
-
-	<div class="text-center pt-8">
-		<Button class="text-lg uppercase tracking-widest" on:click={handleBuyClick}>Buy</Button>
 	</div>
 </Modal>

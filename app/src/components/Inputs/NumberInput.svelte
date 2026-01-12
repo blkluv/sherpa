@@ -24,7 +24,7 @@
 		on:keyup
 		bind:value
 		disabled={$$props.disabled}
-		type="number"
+		type="string"
 		{placeholder}
 		{required}
 	/>

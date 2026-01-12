@@ -73,8 +73,6 @@
 			offer.meta.account.no
 		);
 
-		console.log(offer.shipment.account.channel.shipper);
-		console.log(offer.shipment.account.channel.carrier);
 		const ix = await prepareSendMessageIx(
 			program,
 			$walletStore.publicKey!,

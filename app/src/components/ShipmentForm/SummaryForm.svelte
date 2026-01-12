@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { reporter } from '@felte/reporter-svelte';
 	import { createForm } from 'felte';
-	import Button from '../Buttons/Button.svelte';
 	import SummaryWrapper from '../SummaryWrapper.svelte';
 	import type { CreateShipmentFormInterface } from './interfaces';
 
@@ -27,9 +26,20 @@
 	<form use:form class="mt-8">
 		<SummaryWrapper shipment={initialValues} />
 
-		<div class="flex justify-center space-x-5 mt-14">
-			<Button class="uppercase tracking-widest" on:click={() => onBack($data)}>Prev</Button>
-			<Button class="uppercase tracking-widest" type="submit">Finalize</Button>
+		<div class="flex justify-center gap-4 mt-10">
+			<button
+				type="button"
+				class="px-8 py-3 rounded-full border-2 border-gray-100 text-gray-400 text-xs font-black uppercase tracking-[0.2em] hover:bg-gray-50 transition-all"
+				on:click={() => onBack($data)}
+			>
+				Prev
+			</button>
+			<button
+				type="submit"
+				class="px-10 py-3 rounded-full bg-gradient-to-r from-primary to-secondary text-white text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+			>
+				Finalize
+			</button>
 		</div>
 	</form>
 </div>

@@ -6,7 +6,6 @@
 	import { createForm } from 'felte';
 	import { LngLat } from 'maplibre-gl';
 	import * as yup from 'yup';
-	import Button from '../Buttons/Button.svelte';
 
 	import type { LocationsFormInterface } from './interfaces';
 	import { locationsFormSchema as schema } from './schemas';
@@ -104,98 +103,155 @@
 	<h2
 		class="font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
 	>
-		Locations
+		Logistics Route
 	</h2>
-	<p class="text-neutral-600 text-sm max-w-sm mt-2">Choose start and end location on map.</p>
+	<p class="text-neutral-600 text-sm max-w-sm mt-2">Define pickup and dropoff points.</p>
+	<!-- <div class="px-1">
+		<h2
+			class="font-black text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent uppercase tracking-tight"
+		>
+			Logistics Route
+		</h2>
+		<p class="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mt-1 opacity-70">
+			Define pickup and dropoff points
+		</p>
+	</div> -->
 
-	<form use:form class="mt-8">
-		<table class="w-full">
-			<tr>
-				<td></td>
-				<td>Location</td>
-				<td>Longitude</td>
-				<td>Latitude</td>
-			</tr>
+	<form use:form class="mt-4">
+		<div class="relative px-2">
+			<div
+				class="absolute left-[29px] top-8 bottom-8 w-0.5 border-l-2 border-dashed border-gray-100 z-0"
+			></div>
 
-			<tr>
-				<td class="py-4">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						fill="var(--primary)"
-						class="bi bi-geo-alt"
-						viewBox="0 0 16 16"
+			<div class="space-y-10 relative z-10">
+				<div class="flex items-center gap-6 group">
+					<div
+						class="w-10 h-10 rounded-full border-2 border-primary bg-white shadow-sm flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
 					>
-						<path
-							d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"
-						/>
-						<path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-					</svg>
-				</td>
-				<td>{$data.sourceName}</td>
-				<td>{$data.sourceLocationLat.toFixed(4)}</td>
-				<td>{$data.sourceLocationLng.toFixed(4)}</td>
-			</tr>
-
-			<tr>
-				<td>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						fill="var(--primary)"
-						class="bi bi-geo-alt"
-						viewBox="0 0 16 16"
+						<div class="w-3 h-3 rounded-full bg-primary"></div>
+					</div>
+					<div
+						class="flex-1 bg-gray-50/50 p-4 rounded-2xl border border-transparent group-hover:border-primary/10 group-hover:bg-white transition-all cursor-pointer"
+						on:click={() => (showModal = false)}
 					>
-						<path
-							d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"
-						/>
-						<path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-					</svg>
-				</td>
-				<td>{$data.destinationName}</td>
-				<td>{$data.destinationLocationLat.toFixed(4)}</td>
-				<td>{$data.destinationLocationLng.toFixed(4)}</td>
-			</tr>
-		</table>
+						<span class="text-[9px] font-black text-primary uppercase tracking-widest block mb-1"
+							>From / Pickup</span
+						>
+						{#if $data.sourceName}
+							<p class="text-sm font-bold text-gray-800 leading-tight truncate">
+								{$data.sourceName}
+							</p>
+							<p class="text-[9px] text-gray-400 font-mono mt-1">
+								{$data.sourceLocationLat.toFixed(4)}, {$data.sourceLocationLng.toFixed(4)}
+							</p>
+						{:else}
+							<p class="text-sm font-medium text-gray-300 italic tracking-tight">
+								Tap to set pickup location...
+							</p>
+						{/if}
+					</div>
+				</div>
+
+				<div class="flex items-center gap-6 group">
+					<div
+						class="w-10 h-10 rounded-full bg-secondary shadow-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ring-4 ring-secondary/5"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="w-5 h-5 text-white"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2.5"
+								d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+							/>
+						</svg>
+					</div>
+					<div
+						class="flex-1 bg-gray-50/50 p-4 rounded-2xl border border-transparent group-hover:border-secondary/10 group-hover:bg-white transition-all cursor-pointer"
+						on:click={() => (showModal = false)}
+					>
+						<span class="text-[9px] font-black text-secondary uppercase tracking-widest block mb-1"
+							>To / Destination</span
+						>
+						{#if $data.destinationName}
+							<p class="text-sm font-bold text-gray-800 leading-tight truncate">
+								{$data.destinationName}
+							</p>
+							<p class="text-[9px] text-gray-400 font-mono mt-1">
+								{$data.destinationLocationLat.toFixed(4)}, {$data.destinationLocationLng.toFixed(4)}
+							</p>
+						{:else}
+							<p class="text-sm font-medium text-gray-300 italic tracking-tight">
+								Tap to set destination...
+							</p>
+						{/if}
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<div class="flex justify-center mt-8">
 			<button
 				type="button"
-				class="flex items-center text-accent hover:text-gray-500 transition-colors duration-200 ease-in-out"
 				on:click={() => (showModal = false)}
+				class="flex items-center gap-3 px-6 py-2.5 bg-white border border-gray-100 rounded-full shadow-sm hover:shadow-md hover:border-accent/20 transition-all text-accent group"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
-					width="20"
-					height="20"
-					fill="currentColor"
-					class="inline-block mr-2"
-					viewBox="0 0 16 16"
+					class="w-4 h-4 transition-transform group-hover:rotate-12"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
 				>
 					<path
-						d="M8.5.5a.5.5 0 0 0-1 0v.518A7 7 0 0 0 1.018 7.5H.5a.5.5 0 0 0 0 1h.518A7 7 0 0 0 7.5 14.982v.518a.5.5 0 0 0 1 0v-.518A7 7 0 0 0 14.982 8.5h.518a.5.5 0 0 0 0-1h-.518A7 7 0 0 0 8.5 1.018zm-6.48 7A6 6 0 0 1 7.5 2.02v.48a.5.5 0 0 0 1 0v-.48a6 6 0 0 1 5.48 5.48h-.48a.5.5 0 0 0 0 1h.48a6 6 0 0 1-5.48 5.48v-.48a.5.5 0 0 0-1 0v.48A6 6 0 0 1 2.02 8.5h.48a.5.5 0 0 0 0-1zM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2.5"
+						d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
 					/>
 				</svg>
-				<p>Select locations</p>
+				<span class="text-[11px] font-black uppercase tracking-widest">Select via Map</span>
 			</button>
 		</div>
-		{#each ['sourceLocationLat', 'sourceLocationLng', 'destinationLocationLat', 'destinationLocationLng', 'sourceName', 'destinationName'] as name}
-			{@const realName = name[0] == 's' ? 'source' : 'destination'}
-			<ValidationMessage for={name} let:messages={message}>
-				{#if message}
-					<div class="bg-red-200 border-l-4 mt-3 border-red-400 text-orange-700 p-2" role="alert">
-						<p class="font-bold">Invalid {realName} location</p>
-						<p>{message || ''}</p>
-					</div>
-				{/if}
-			</ValidationMessage>
-		{/each}
 
-		<div class="flex justify-center space-x-5 mt-8">
-			<Button class="uppercase tracking-widest" on:click={() => onBack($data)}>Prev</Button>
-			<Button class="uppercase tracking-widest" type="submit">Next</Button>
+		<div class="mt-6 space-y-2">
+			{#each ['sourceName', 'destinationName'] as name}
+				<ValidationMessage for={name} let:messages={message}>
+					{#if message}
+						<div
+							class="mx-2 p-3 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-1"
+						>
+							<div
+								class="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"
+							></div>
+							<p class="text-[10px] font-black text-red-600 uppercase tracking-tight leading-none">
+								{message}
+							</p>
+						</div>
+					{/if}
+				</ValidationMessage>
+			{/each}
+		</div>
+
+		<div class="flex justify-center gap-4 mt-10">
+			<button
+				type="button"
+				class="px-8 py-3 rounded-full border-2 border-gray-100 text-gray-400 text-xs font-black uppercase tracking-[0.2em] hover:bg-gray-50 transition-all"
+				on:click={() => onBack($data)}
+			>
+				Prev
+			</button>
+			<button
+				type="submit"
+				class="px-10 py-3 rounded-full bg-gradient-to-r from-primary to-secondary text-white text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+			>
+				Next
+			</button>
 		</div>
 	</form>
 </div>

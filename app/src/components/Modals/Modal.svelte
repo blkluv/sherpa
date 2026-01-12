@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { scale } from 'svelte/transition';
 	const dispatch = createEventDispatcher();
 
-	export let showModal; // boolean
-	export let showCloseButton = true; // boolean
+	export let showModal: boolean;
+	export let showCloseButton = true;
 
-	let dialog; // HTMLDialogElement
+	let dialog: HTMLDialogElement;
 
 	const onBackdropClick = () => {
 		dispatch('backdropClick');
@@ -15,63 +16,78 @@
 		showModal = false;
 	};
 
-	$: if (dialog && showModal) dialog.showModal();
-	$: if (dialog && !showModal) dialog.close();
+	$: if (dialog && showModal) {
+		dialog.showModal();
+		document.body.style.overflow = 'hidden'; // Blokada przewijania tła
+	} else if (dialog) {
+		dialog.close();
+		document.body.style.overflow = 'auto';
+	}
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog
 	bind:this={dialog}
-	on:close={() => (showModal = false)}
-	on:click|self={() => onBackdropClick()}
-	class="z-index-30 rounded-3xl p-4 bg-white shadow-lg max-w-sm xl:max-w-md w-full overflow-visible"
+	on:close={() => {
+		showModal = false;
+		document.body.style.overflow = 'auto';
+	}}
+	on:click|self={onBackdropClick}
+	class="z-50 rounded-[2rem] overflow-y-auto p-0 bg-white shadow-2xl max-w-[90vw] md:max-w-md w-full overflow-visible border-none backdrop:bg-black/40 backdrop:backdrop-blur-sm"
 >
-	{#if showCloseButton}
-		<div class="z-index-30 absolute top-5 right-5 text-lg">
-			<button on:click|stopPropagation={closeHandler}>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-11 cursor-pointer">
-					<path
-						stroke="var(--secondary)"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="32"
-						d="M368 368L144 144M368 144L144 368"
-					/>
-				</svg></button
-			>
+	{#if showModal}
+		<div class="relative p-6 sm:p-8" in:scale={{ duration: 300, start: 0.95 }}>
+			{#if showCloseButton}
+				<div class="absolute top-4 right-4 z-10">
+					<button
+						on:click|stopPropagation={closeHandler}
+						class="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-secondary hover:bg-gray-100 transition-all active:scale-90"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-6 h-6">
+							<path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="40"
+								d="M368 368L144 144M368 144L144 368"
+							/>
+						</svg>
+					</button>
+				</div>
+			{/if}
+
+			<div class="w-full">
+				<slot />
+			</div>
 		</div>
 	{/if}
-
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click|stopPropagation class="p-5">
-		<slot />
-	</div>
 </dialog>
 
 <style>
+	/* Natywne stylowanie backdropa dla przeglądarek */
+	dialog::backdrop {
+		background: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(4px);
+	}
+
+	/* Usuwamy domyślne obramowanie dialogu w Chrome */
+	dialog:focus-visible {
+		outline: none;
+	}
+
+	/* Animacja otwierania - płynne wejście */
 	dialog[open] {
-		animation: zoom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+		animation: show 0.3s ease-out forwards;
 	}
 
-	@keyframes zoom {
-		from {
-			transform: scale(0.95);
-		}
-		to {
-			transform: scale(1);
-		}
-	}
-
-	dialog[open]::backdrop {
-		animation: fade 0.5s ease-out;
-	}
-
-	@keyframes fade {
+	@keyframes show {
 		from {
 			opacity: 0;
+			transform: translateY(10px);
 		}
 		to {
 			opacity: 1;
+			transform: translateY(0);
 		}
 	}
 </style>

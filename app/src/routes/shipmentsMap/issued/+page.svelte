@@ -66,11 +66,9 @@
 	}
 
 	async function onClickConfirm() {
-		console.log('confirm');
 		const { program } = get(anchorStore);
 		const wallet = get(walletStore);
 		const { connection } = get(web3Store);
-		console.log(get(acceptedShipmentOffers));
 		const task = get(acceptedShipmentOffers).find(
 			(el) => el.shipment.publicKey === selectedShipment!.publicKey
 		);

@@ -1,7 +1,7 @@
 {
-  "name": "trans-protocol",
+  "name": "sherpa",
   "version": "0.1.0",
-  "author": "github.com/matzayonc & github.com/tommysr",
+  "author": "https://github.com/FlashBois",
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",

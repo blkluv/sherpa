@@ -1,9 +1,8 @@
-import { PublicKey } from '@solana/web3.js';
-import { type SearchStore } from './search';
-import { searchableShipments, type SearchableShipment } from './searchableShipments';
-import { derived, writable, type Writable } from 'svelte/store';
 import type { ApiForwardedShipmentAccount } from '$src/utils/account/forwardedShipment';
 import type { ApiShipmentAccount } from '$src/utils/account/shipment';
+import { derived, writable, type Writable } from 'svelte/store';
+import { type SearchStore } from './search';
+import { searchableShipments, type SearchableShipment } from './searchableShipments';
 
 // For now it isn't searchable
 // but it should be in the future
@@ -38,8 +37,6 @@ export const forwardedShipments = derived<
 				}
 			})
 			.filter((item) => item !== null) as ForwardedShipment[];
-
-			console.log(mapped)
 
 		set(mapped);
 	},

@@ -45,19 +45,20 @@
 	};
 
 	function flyToLocation(bounds: LngLatBounds) {
-		map.fitBounds(bounds, {
-			duration: 2000,
-			animate: true,
-			// offset: isMobile ? [0, -100] : [-200, 0],
-			// padding: {'right': 600, 'left':100},
-			padding: 100
-		});
-		// map.flyTo({
-		// 	center: location,
-		// 	zoom: isMobile ? 7 : 8,
-		// 	duration: 2000,
-		// 	offset: isMobile ? [0, -100] : [-200, 0]
-		// });
+		if (window.innerWidth <= 768) {
+			map.fitBounds(bounds, {
+				duration: 2000,
+				animate: true,
+				padding: 100
+			});
+		} else {
+			map.fitBounds(bounds, {
+				duration: 1500,
+				animate: true,
+				offset: [-150, 0],
+				padding: { right: 350, left: 550, top: 250, bottom: 250 }
+			});
+		}
 	}
 </script>
 

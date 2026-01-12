@@ -49,8 +49,6 @@
 			fitCarriersToBounds();
 		});
 	}
-
-	$: console.log(selectedCarrier);
 </script>
 
 {#each displayedLocations as { publicKey, account }, i (publicKey)}

@@ -1,20 +1,13 @@
 <script lang="ts">
+	import { getOfferAddresses } from '$sdk/sdk';
+	import AcceptShipmentModal from '$src/components/Modals/AcceptShipmentModal.svelte';
 	import ShipmentInformationModal from '$src/components/Modals/ShipmentInformationModal.svelte';
 	import OfferListElement from '$src/components/Offer/OfferListElement.svelte';
+	import ShipmentsLocations from '$src/components/ShipmentMap/ShipmentsLocations.svelte';
 	import { shipmentOffers, type OfferedShipment } from '$src/stores/offers';
-	import ShipmentLocations from '$src/components/ShipmentMap/ShipmentsLocations.svelte';
-	import { getAcceptShipmentOfferTx } from '$lib/offer';
-	import { get } from 'svelte/store';
+	import type { ApiShipmentAccount } from '$src/utils/account/shipment';
 	import { anchorStore } from '$stores/anchor';
 	import { walletStore } from '$stores/wallet';
-	import { web3Store } from '$stores/web3';
-	import { PublicKey } from '@solana/web3.js';
-	import { useSignAndSendTransaction } from '$utils/wallet/singAndSendTx';
-	import { createNotification } from '$components/Notification/notificationsStore';
-	import ShipmentsLocations from '$src/components/ShipmentMap/ShipmentsLocations.svelte';
-	import type { ApiShipmentAccount } from '$src/utils/account/shipment';
-	import AcceptShipmentModal from '$src/components/Modals/AcceptShipmentModal.svelte';
-	import { getAcceptedOfferAddresses, getCarrierAddress, getOfferAddresses } from '$sdk/sdk';
 
 	let selectedOffer: OfferedShipment | undefined = undefined;
 	let selectedShipment: ApiShipmentAccount | undefined = undefined;
@@ -26,12 +19,9 @@
 		(p) => p.toString()
 	);
 
-	// not disappear until accepted
 	$: myOfferedShipments = isWalletConnected
 		? $shipmentOffers.filter((s) => offerAddresses.includes(s.meta.publicKey))
 		: [];
-
-	$: console.log('gg', offerAddresses, $shipmentOffers, myOfferedShipments);
 
 	$: shipments = myOfferedShipments.map((offerWithShipment) => offerWithShipment.shipment);
 

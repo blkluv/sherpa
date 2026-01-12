@@ -268,12 +268,10 @@
 		if (form == FormStage.Summary) {
 			await buyShipment(states as CreateShipmentFormInterface);
 		} else {
-			console.log(form, values);
 			states[form] = values;
 
 			if (form == FormStage.Locations) {
 				summarizeState();
-				console.log(states);
 			}
 			states = states;
 			pushState('', { form: nextStage(form), showModal: true, carrierForm: CarrierFormStage.Name });

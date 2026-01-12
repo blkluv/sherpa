@@ -2,6 +2,7 @@
 	import clsx from 'clsx';
 
 	import { page } from '$app/stores';
+	import { searchableShipments } from '$src/stores/searchableShipments';
 
 	import { userStore } from '$src/stores/user';
 	import { walletStore } from '$src/stores/wallet';
@@ -14,7 +15,7 @@
 	import SendIcon from './NavbarIcons/SendIcon.svelte';
 	import TrackIcon from './NavbarIcons/TrackIcon.svelte';
 
-	import logoImage from '$lib/images/logo-small.svg';
+	let storeToSearchIn = searchableShipments;
 
 	$: currentPage = $page.url.pathname;
 	$: isNavbarOpen = false;
@@ -66,151 +67,214 @@
 			]
 		}
 	];
+
+	function handleSearchKeyUp(e: KeyboardEvent) {
+		if ($storeToSearchIn.searchString && e.key == 'Enter') {
+			storeToSearchIn.performSearch();
+		} else if (!$storeToSearchIn.searchString) {
+			storeToSearchIn.purgeFiltered();
+		}
+	}
 </script>
 
-<nav class="hidden md:block">
-	<div class="fixed left-5 top-5 z-10">
-		<a href="/">
-			<img src={logoImage} alt="logo" class="w-16" />
-		</a>
-	</div>
+<div
+	class={clsx(
+		'fixed z-10 top-5 transition-all duration-300',
+		'left-5 right-20 md:left-1/2 md:right-auto md:w-1/3 xl:w-1/4 md:-translate-x-1/2',
+		isNavbarOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+	)}
+>
+	<div class="relative group">
+		<div
+			class="absolute inset-0 bg-white shadow-xl border border-gray-100 rounded-xl transition-all group-focus-within:border-primary/40"
+		></div>
 
+		<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
+			<svg
+				class="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2.5"
+					d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+				/>
+			</svg>
+		</div>
+
+		<input
+			class="relative z-10 block w-full pl-11 pr-4 py-2.5 bg-transparent outline-none text-sm md:text-base font-medium text-gray-800 placeholder-gray-400"
+			type="text"
+			placeholder="Search shipments..."
+			bind:value={$storeToSearchIn.searchString}
+			on:keyup={handleSearchKeyUp}
+		/>
+
+		<div
+			class="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-primary to-secondary transform scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 rounded-full"
+		></div>
+	</div>
+</div>
+
+<nav class="hidden md:block">
 	<div
-		class="fixed left-5 w-10 z-10 bg-white rounded-full top-1/2 transform -translate-y-1/2 py-1.5 px-7 shadow-lg"
+		class="fixed left-5 w-14 z-10 bg-white rounded-full top-1/2 -translate-y-1/2 py-6 shadow-2xl border border-gray-50"
 	>
-		<div class="flex flex-col items-center justify-center space-y-3">
+		<div class="flex flex-col items-center space-y-4">
 			{#each navigation as { name, link, svg, routes }}
+				{@const isMainActive = currentPage.includes(link)}
 				<div
 					class={clsx(
-						'flex flex-col justify-center items-center space-y-4 rounded-full px-2.5 py-4',
-						currentPage.includes(link) && routes ? 'bg-primary-100' : ''
+						'flex flex-col items-center space-y-4 rounded-full p-2 transition-colors',
+						isMainActive && routes ? 'bg-primary/5' : ''
 					)}
 				>
-					<div class={clsx('group relative')}>
-						<a href={link}
-							><svelte:component
+					<div class="group relative">
+						<a href={link}>
+							<svelte:component
 								this={svg}
 								className={clsx(
-									'hover:scale-125 transition-all ease-in-out duration-150',
-									currentPage === link ? 'fill-primary' : 'fill-gray-500'
+									'w-6 h-6 transition-all duration-200 hover:scale-120',
+									currentPage === link ? 'fill-primary' : 'fill-gray-400 hover:fill-gray-600'
 								)}
-							/></a
-						>
+							/>
+						</a>
 						<span
-							class="opacity-0 group-hover:opacity-100 duration-300 bg-white absolute left-12 -top-2 p-2 rounded-lg shadow"
+							class="pointer-events-none absolute left-14 top-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-50"
 						>
 							{name}
 						</span>
 					</div>
 
-					{#if routes && currentPage.includes(link)}
-						{#each routes as { name, link, svg }}
-							<div class="group relative">
-								<a href={link}
-									><svelte:component
-										this={svg}
-										className={clsx(
-											'hover:scale-125 transition-all ease-in-out duration-150',
-											currentPage === link ? 'fill-primary' : 'fill-gray-500'
-										)}
-									/></a
-								>
-								<span
-									class="opacity-0 group-hover:opacity-100 duration-300 bg-white absolute left-11 -top-3 p-2 rounded-lg shadow"
-								>
-									{name}
-								</span>
-							</div>
-						{/each}
+					{#if routes && isMainActive}
+						<div class="flex flex-col space-y-3 pt-2 border-t border-gray-100">
+							{#each routes as route}
+								<div class="group relative">
+									<a href={route.link}>
+										<svelte:component
+											this={route.svg}
+											className={clsx(
+												'w-5 h-5 transition-all hover:scale-120',
+												currentPage === route.link
+													? 'fill-primary'
+													: 'fill-gray-400 hover:fill-gray-500'
+											)}
+										/>
+									</a>
+									<span
+										class="pointer-events-none absolute left-12 top-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-50"
+									>
+										{route.name}
+									</span>
+								</div>
+							{/each}
+						</div>
 					{/if}
 				</div>
 			{/each}
 		</div>
 	</div>
 
-	<div class="fixed top-7 right-7 z-40">
-		<WalletMultiButton onClose={() => {}} />
+	<div class="fixed top-5 right-7 z-40">
+		<div class="origin-right">
+			<WalletMultiButton onClose={() => {}} />
+		</div>
 	</div>
 </nav>
 
 <nav class="md:hidden">
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		viewBox="0 0 512 512"
-		class={clsx('fixed z-30 right-0 w-12 m-5 cursor-pointer', isNavbarOpen ? 'hidden' : '')}
+	<button
+		class="fixed z-50 right-4 top-4 p-3 rounded-xl bg-white shadow-xl border border-gray-100 active:scale-95 transition-all"
 		on:click={() => (isNavbarOpen = !isNavbarOpen)}
 	>
-		<path
-			stroke="var(--primary)"
-			stroke-linecap="round"
-			stroke-miterlimit="10"
-			stroke-width="32"
-			d="M80 160h352M80 256h352M80 352h352"
-		/>
-	</svg>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			class="w-6 h-6 text-gray-800"
+			fill="none"
+			viewBox="0 0 24 24"
+			stroke="currentColor"
+		>
+			{#if !isNavbarOpen}
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2.5"
+					d="M4 6h16M4 12h16M4 18h7"
+				/>
+			{:else}
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2.5"
+					d="M6 18L18 6M6 6l12 12"
+				/>
+			{/if}
+		</svg>
+	</button>
 
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		viewBox="0 0 512 512"
-		class={clsx('fixed z-30 right-0 w-12 m-5 cursor-pointer', !isNavbarOpen ? 'hidden' : '')}
-		on:click={() => (isNavbarOpen = !isNavbarOpen)}
-	>
-		<path
-			stroke="var(--secondary)"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-			stroke-width="32"
-			d="M368 368L144 144M368 144L144 368"
-		/>
-	</svg>
+	{#if isNavbarOpen}
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<div
+			class="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm transition-opacity"
+			on:click={() => (isNavbarOpen = false)}
+		></div>
+	{/if}
 
 	<div
 		class={clsx(
-			'fixed left-0 z-20 top-0 flex flex-col h-screen w-full items-center justify-between bg-background',
-			!isNavbarOpen ? 'hidden' : ''
+			'fixed right-0 top-0 z-40 h-screen w-[280px] bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col',
+			isNavbarOpen ? 'translate-x-0' : 'translate-x-full'
 		)}
 	>
-		<div></div>
-		<nav class="">
-			<ul class="flex h-3/4 flex-col items-center space-y-12">
+		<div class="flex-1 overflow-y-auto py-4 mt-16">
+			<ul class="space-y-1 px-3">
 				{#each navigation as { name, link, routes }}
-					<div
-						class={clsx(
-							'p-5 rounded-xl flex flex-col justify-center items-center',
-							routes && currentPage.includes(link) ? 'bg-primary-100' : ''
-						)}
-					>
+					{@const isActive = currentPage === link || (routes && currentPage.includes(link))}
+					<li>
 						<a
 							href={link}
 							on:click={() => (isNavbarOpen = false)}
 							class={clsx(
-								'text-2xl',
-								currentPage === link
-									? 'bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'
-									: ''
+								'flex items-center justify-between px-4 py-3 rounded-lg font-bold transition-all',
+								isActive ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-50'
 							)}
 						>
-							{name}
+							<span class="text-lg">{name}</span>
+							{#if isActive}<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>{/if}
 						</a>
 
 						{#if routes && currentPage.includes(link)}
-							{#each routes as { name, link, svg }}
-								<div class="mt-5">
-									<a on:click={() => (isNavbarOpen = false)} href={link} class="text-sm">{name}</a>
-								</div>
-							{/each}
+							<div class="ml-4 mt-1 border-l-2 border-primary/20 flex flex-col space-y-1">
+								{#each routes as route}
+									<a
+										on:click={() => (isNavbarOpen = false)}
+										href={route.link}
+										class={clsx(
+											'pl-6 py-2 text-sm font-medium transition-colors',
+											currentPage === route.link
+												? 'text-primary font-bold'
+												: 'text-gray-400 hover:text-gray-600'
+										)}
+									>
+										{route.name}
+									</a>
+								{/each}
+							</div>
 						{/if}
-					</div>
+					</li>
 				{/each}
 			</ul>
-		</nav>
+		</div>
 
-		<div class="mb-5">
-			<WalletMultiButton onClose={() => (isNavbarOpen = false)} />
+		<div class="p-6 bg-white border-t border-gray-100 mt-auto items-center flex justify-center">
+			<div class="relative w-full flex justify-center">
+				<WalletMultiButton onClose={() => (isNavbarOpen = false)} />
+			</div>
 		</div>
 	</div>
 </nav>
