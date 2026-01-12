@@ -122,57 +122,52 @@
 
 <nav class="hidden md:block">
 	<div
-		class="fixed left-5 w-14 z-10 bg-white rounded-full top-1/2 -translate-y-1/2 py-6 shadow-2xl border border-gray-50"
+		class="fixed left-5 w-10 z-10 bg-white rounded-full top-1/2 transform -translate-y-1/2 py-1.5 px-7 shadow-lg"
 	>
-		<div class="flex flex-col items-center space-y-4">
+		<div class="flex flex-col items-center justify-center space-y-3">
 			{#each navigation as { name, link, svg, routes }}
-				{@const isMainActive = currentPage.includes(link)}
 				<div
 					class={clsx(
-						'flex flex-col items-center space-y-4 rounded-full p-2 transition-colors',
-						isMainActive && routes ? 'bg-primary/5' : ''
+						'flex flex-col justify-center items-center space-y-4 rounded-full px-2.5 py-4',
+						currentPage.includes(link) && routes ? 'bg-primary-100' : ''
 					)}
 				>
-					<div class="group relative">
-						<a href={link}>
-							<svelte:component
+					<div class={clsx('group relative')}>
+						<a href={link}
+							><svelte:component
 								this={svg}
 								className={clsx(
-									'w-6 h-6 transition-all duration-200 hover:scale-120',
-									currentPage === link ? 'fill-primary' : 'fill-gray-400 hover:fill-gray-600'
+									'hover:scale-125 transition-all ease-in-out duration-150',
+									currentPage === link ? 'fill-primary' : 'fill-gray-500'
 								)}
-							/>
-						</a>
+							/></a
+						>
 						<span
-							class="pointer-events-none absolute left-14 top-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-50"
+							class="opacity-0 group-hover:opacity-100 duration-300 bg-white absolute left-12 -top-2 p-2 rounded-lg shadow"
 						>
 							{name}
 						</span>
 					</div>
 
-					{#if routes && isMainActive}
-						<div class="flex flex-col space-y-3 pt-2 border-t border-gray-100">
-							{#each routes as route}
-								<div class="group relative">
-									<a href={route.link}>
-										<svelte:component
-											this={route.svg}
-											className={clsx(
-												'w-5 h-5 transition-all hover:scale-120',
-												currentPage === route.link
-													? 'fill-primary'
-													: 'fill-gray-400 hover:fill-gray-500'
-											)}
-										/>
-									</a>
-									<span
-										class="pointer-events-none absolute left-12 top-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-50"
-									>
-										{route.name}
-									</span>
-								</div>
-							{/each}
-						</div>
+					{#if routes && currentPage.includes(link)}
+						{#each routes as { name, link, svg }}
+							<div class="group relative">
+								<a href={link}
+									><svelte:component
+										this={svg}
+										className={clsx(
+											'hover:scale-125 transition-all ease-in-out duration-150',
+											currentPage === link ? 'fill-primary' : 'fill-gray-500'
+										)}
+									/></a
+								>
+								<span
+									class="opacity-0 group-hover:opacity-100 duration-300 bg-white absolute left-11 -top-3 p-2 rounded-lg shadow"
+								>
+									{name}
+								</span>
+							</div>
+						{/each}
 					{/if}
 				</div>
 			{/each}
