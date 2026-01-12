@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+
+	injectSpeedInsights();
 	// sass
 	import '$src/sass/main.scss';
 
@@ -20,46 +23,41 @@
 	import ConnectionProvider from '$src/components/Wallet/ConnectionProvider.svelte';
 	import WalletProvider from '$src/components/Wallet/WalletProvider.svelte';
 	// solana
+	import { decodeName } from '$sdk/sdk';
 	import LeftNavbar from '$src/components/Navigation/LeftNavbar.svelte';
 	import Notifications from '$src/components/Notification/Notifications.svelte';
-	import MapWrapper from '$src/components/ShipmentMap/MapWrapper.svelte';
-	import { clusterApiUrl } from '@solana/web3.js';
-	import { userStore } from '$src/stores/user';
-	import { walletStore } from '$src/stores/wallet';
-	import { decodeName } from '$sdk/sdk';
-	import { fetchForwarderAccount } from '$src/lib/forwarder';
-	import { fetchShipperAccount } from '$src/lib/shipper';
-	import { fetchCarrierAccount } from '$src/lib/carrier';
-	import { get } from 'svelte/store';
-	import { anchorStore } from '$src/stores/anchor';
-	import type { ApiShipmentAccount, FetchedShipment } from '$src/utils/account/shipment';
-	import { parseShipmentToApiShipment } from '$src/utils/parse/shipment';
-	import { searchableShipments } from '$src/stores/searchableShipments';
-	import type {
-		ApiForwardedShipmentAccount,
-		FetchedForwardedShipment
-	} from '$src/utils/account/forwardedShipment';
-	import { parseForwardedShipmentToApiForwardedShipment } from '$src/utils/parse/forwardedShipment';
-	import { forwardedShipmentsMeta } from '$src/stores/forwarderShipments';
 	import {
 		createNotification,
-		removeNotification
+		updateNotification
 	} from '$src/components/Notification/notificationsStore';
-	import { awaitedConfirmation } from '$src/stores/confirmationAwait';
-	import { web3Store } from '$src/stores/web3';
-	import type {
-		ApiShipmentOffer,
-		ApiShipmentOfferAccount,
-		ShipmentOffer
-	} from '$src/utils/account/offer';
-	import { parseOfferToApiOffer } from '$src/utils/parse/offer';
+	import MapWrapper from '$src/components/ShipmentMap/MapWrapper.svelte';
+	import { fetchCarrierAccount } from '$src/lib/carrier';
+	import { fetchForwarderAccount } from '$src/lib/forwarder';
+	import { fetchShipperAccount } from '$src/lib/shipper';
+	import { acceptedShipmentsOffersMeta } from '$src/stores/acceptedOffers';
+	import { anchorStore } from '$src/stores/anchor';
+	import { forwardedShipmentsMeta } from '$src/stores/forwarderShipments';
 	import { shipmentsOffersMeta } from '$src/stores/offers';
+	import { searchableShipments } from '$src/stores/searchableShipments';
+	import { userStore } from '$src/stores/user';
+	import { walletStore } from '$src/stores/wallet';
+	import { web3Store } from '$src/stores/web3';
 	import type {
 		AcceptedShipmentOffer,
 		ApiAcceptedShipmentOfferAccount
 	} from '$src/utils/account/acceptedOffer';
+	import type {
+		ApiForwardedShipmentAccount,
+		FetchedForwardedShipment
+	} from '$src/utils/account/forwardedShipment';
+	import type { ApiShipmentOfferAccount, ShipmentOffer } from '$src/utils/account/offer';
+	import type { ApiShipmentAccount, FetchedShipment } from '$src/utils/account/shipment';
 	import { parseAcceptedOfferToApiAcceptedOffer } from '$src/utils/parse/acceptedOffer';
-	import { acceptedShipmentOffers, acceptedShipmentsOffersMeta } from '$src/stores/acceptedOffers';
+	import { parseForwardedShipmentToApiForwardedShipment } from '$src/utils/parse/forwardedShipment';
+	import { parseOfferToApiOffer } from '$src/utils/parse/offer';
+	import { parseShipmentToApiShipment } from '$src/utils/parse/shipment';
+	import { clusterApiUrl } from '@solana/web3.js';
+	import { get } from 'svelte/store';
 
 	let wallets: Adapter[];
 	// it's a solana devnet cluster, but consider changing it to more performant provider
@@ -89,8 +87,6 @@
 
 		const signature = await connection.requestAirdrop(publicKey!, SOL_IN_LAMPORTS);
 
-		console.log(signature);
-
 		const latestBlockHash = await connection.getLatestBlockhash();
 
 		await connection.confirmTransaction({
@@ -104,13 +100,27 @@
 
 	$: if (isWalletConnected && SHOULD_REQUEST_AIRDROP) {
 		requiresAirdrop().then((res) => {
+			const id = createNotification({
+				text: 'Airdrop',
+				type: 'loading',
+				removeAfter: 5000
+			});
 			if (res) {
 				airDropSol()
 					.then((signature) => {
-						createNotification({ text: 'airdrop', type: 'success', removeAfter: 5000, signature });
+						updateNotification(id, {
+							text: 'Airdrop',
+							type: 'success',
+							removeAfter: 3000,
+							signature
+						});
 					})
 					.catch(() => {
-						createNotification({ text: 'airdrop', type: 'failed', removeAfter: 3000 });
+						updateNotification(id, {
+							text: 'Airdrop',
+							type: 'failed',
+							removeAfter: 3000
+						});
 					});
 			}
 		});
@@ -157,14 +167,6 @@
 
 				const shipper = event.shipper;
 
-				if ($walletStore.publicKey && shipper.toString() === $walletStore.publicKey.toString()) {
-					const id = $awaitedConfirmation;
-					if (id) {
-						removeNotification(id);
-					}
-					createNotification({ text: 'Create', type: 'success', removeAfter: 5000 });
-				}
-
 				searchableShipments.extend({
 					...parsedShipment,
 					searchParams: parsedShipment.account.shipment.details.priority.toString()
@@ -186,14 +188,6 @@
 				};
 
 				const buyer = event.buyer;
-
-				if ($walletStore.publicKey && buyer.toString() === $walletStore.publicKey.toString()) {
-					const id = $awaitedConfirmation;
-					if (id) {
-						removeNotification(id);
-					}
-					createNotification({ text: 'Buy', type: 'success', removeAfter: 5000 });
-				}
 
 				forwardedShipmentsMeta.update((meta) => {
 					meta.push(parsedForwardedShipment);
@@ -225,14 +219,6 @@
 
 			const offerer = event.from;
 
-			if ($walletStore.publicKey && offerer.toString() === $walletStore.publicKey.toString()) {
-				const id = $awaitedConfirmation;
-				if (id) {
-					removeNotification(id);
-				}
-				createNotification({ text: 'Offer', type: 'success', removeAfter: 5000 });
-			}
-
 			const shipment = event.shipment.toString();
 			forwardedShipmentsMeta.update((meta) => {
 				const forwardIndex = meta.findIndex((f) => f.account.shipment === shipment);
@@ -254,7 +240,7 @@
 				const shipmentIndex = s.data.findIndex((a) => a.publicKey === event.shipment.toString());
 
 				if (shipmentIndex != -1) {
-					 s.data[shipmentIndex].account.status = 3;
+					s.data[shipmentIndex].account.status = 3;
 				}
 
 				return s;
@@ -273,14 +259,6 @@
 			};
 
 			const carrier = event.to;
-
-			if ($walletStore.publicKey && carrier.toString() === $walletStore.publicKey.toString()) {
-				const id = $awaitedConfirmation;
-				if (id) {
-					removeNotification(id);
-				}
-				createNotification({ text: 'Accept', type: 'success', removeAfter: 5000 });
-			}
 
 			const shipment = event.shipment.toString();
 			shipmentsOffersMeta.update((meta) => {
@@ -301,7 +279,8 @@
 
 			const shipmentPublicKey = event.shipment;
 
-			const shipmentAccount: FetchedShipment = await program.account.shipment.fetch(shipmentPublicKey);
+			const shipmentAccount: FetchedShipment =
+				await program.account.shipment.fetch(shipmentPublicKey);
 
 			const parsedShipment: ApiShipmentAccount = {
 				publicKey: shipmentPublicKey.toString(),
@@ -319,7 +298,12 @@
 			});
 		});
 
-		return [unsubscribeForwardedShipment, unsubscribeShipmentCreated, unsubscribeOfferedShipment, unsubscribeAcceptedShipment];
+		return [
+			unsubscribeForwardedShipment,
+			unsubscribeShipmentCreated,
+			unsubscribeOfferedShipment,
+			unsubscribeAcceptedShipment
+		];
 	}
 
 	onMount(() => {
