@@ -1,10 +1,16 @@
-# Sherpa - Decentralized Logistics Protocol
+<div align="center"><h1>🌍 Sherpa - Decentralized Logistics Protocol</h1></div>
 
-> A blockchain-based logistics marketplace built on Solana that connects shippers, forwarders, and carriers in a transparent, trustless ecosystem.
-
-## Overview
+<br/>
 
 Sherpa reimagines the logistics industry by creating a decentralized protocol where shipping transactions are executed through smart contracts on the Solana blockchain. The platform eliminates traditional intermediaries while maintaining the role-based structure that makes logistics efficient.
+
+<br/>
+
+<div align="center">
+  <img src="./docs/apresh-mobile.gif" width="700" height="auto" alt="Prezentacja interfejsu aplikacji Apresh">
+</div>
+
+<br/>
 
 ### The Three Pillars
 
@@ -20,18 +26,23 @@ Compete for shipments through a bidding mechanism, offering competitive rates an
 ## Core Features
 
 ### 🔐 Trustless Escrow System
+
 Smart contracts automatically handle payment flows, holding funds until delivery confirmation. Collateral and penalty mechanisms ensure accountability without requiring traditional legal frameworks.
 
 ### 💬 End-to-End Encrypted Messaging
+
 Implements Diffie-Hellman key exchange for secure communication channels. While shipment data and transactions are publicly visible on-chain, private messages between parties are encrypted off-chain, ensuring sensitive delivery instructions and coordination remain confidential.
 
 ### 🎯 Competitive Bidding Mechanism
+
 Carriers submit offers with custom payment amounts and timeout windows. The market-driven approach ensures competitive pricing while maintaining service quality through reputation systems.
 
 ### 🗺️ Geographic Intelligence
+
 Full integration with MapLibre GL for real-time shipment visualization. Supports precise location data (latitude/longitude) with human-readable location names for both origin and destination.
 
 ### ⚡ High-Performance Blockchain
+
 Built on Solana for sub-second transaction finality and minimal fees, making micro-transactions economically viable and enabling real-time logistics coordination.
 
 ## Protocol Architecture
@@ -44,7 +55,7 @@ The on-chain program manages the entire logistics workflow through a series of i
 // User Registration & Identity
 initialize_state()          // Bootstrap protocol
 register_shipper(name)      // Onboard shipper
-register_forwarder(name)    // Onboard forwarder  
+register_forwarder(name)    // Onboard forwarder
 register_carrier(name, availability)  // Onboard carrier with availability
 
 // Shipment Lifecycle
@@ -123,6 +134,7 @@ Result: Only encrypted messages stored on-chain
 ```
 
 This hybrid approach provides:
+
 - Transparent marketplace for price discovery and trust
 - Private messaging for sensitive delivery instructions
 - End-to-end encryption without trusted intermediaries
@@ -131,12 +143,14 @@ This hybrid approach provides:
 ## Technology Stack
 
 ### Solana Blockchain
+
 - **Speed**: ~400ms block time enables real-time logistics updates
 - **Cost**: Minimal transaction fees make micropayments economically viable
 - **Scalability**: High throughput supports global logistics volume
 - **Anchor Framework**: Type-safe smart contract development with automatic TypeScript SDK generation
 
 ### SvelteKit Frontend
+
 - **Performance**: Minimal runtime overhead with compile-time optimization
 - **Developer Experience**: Reactive framework with less boilerplate
 - **SSR**: Server-side rendering for improved SEO and initial load times
@@ -185,18 +199,23 @@ sherpa/
 ## Use Cases
 
 ### 🛒 E-commerce Integration
+
 Online marketplaces can integrate Sherpa to offer decentralized shipping, reducing costs and increasing transparency for customers.
 
 ### 🌍 Cross-Border Trade
+
 International shipments benefit from cryptocurrency payments, eliminating currency conversion fees and banking delays.
 
 ### 📦 Supply Chain Transparency
+
 Complete on-chain record of shipment lifecycle provides immutable audit trail for compliance and quality assurance.
 
 ### 🏘️ Last-Mile Networks
+
 Local carriers can participate in a global marketplace, creating peer-to-peer delivery networks for final-leg distribution.
 
 ### 🚢 Freight Forwarding
+
 Automates traditional freight forwarding with smart contracts, reducing administrative overhead and settlement delays.
 
 ## Screenshots
