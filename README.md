@@ -1,4 +1,4 @@
-<div align="center"><h1>🌍 Sherpa - Decentralized Logistics Protocol</h1></div>
+<div align="center"><h1>✈️ Sherpa - Decentralized Logistics Protocol</h1></div>
 
 <br/>
 
