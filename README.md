@@ -2,7 +2,7 @@
 
 <br/>
 
-Sherpa reimagines the logistics industry by creating a decentralized protocol where shipping transactions are executed through smart contracts on the Solana blockchain. The platform eliminates traditional intermediaries while maintaining the role-based structure that makes logistics efficient.
+Sherpa reimagines the logistics industry by creating a decentralized protocol where shipping transactions are executed through programmable smart contracts. The platform eliminates traditional intermediaries while maintaining the role-based structure that makes logistics efficient, leveraging distributed ledger technology for transparency and automation.
 
 <br/>
 
@@ -15,7 +15,7 @@ Sherpa reimagines the logistics industry by creating a decentralized protocol wh
 ### The Three Pillars
 
 **🏭 Shippers**  
-Create shipment requests with detailed specifications including dimensions, geography, collateral requirements, and deadlines. Each shipment is tokenized on-chain with transparent pricing and requirements.
+Create shipment requests with detailed specifications including dimensions, geography, collateral requirements, and deadlines. Each shipment is recorded immutably with transparent pricing and requirements.
 
 **🔄 Forwarders**  
 Act as market makers in the logistics ecosystem, purchasing shipments from shippers and reselling them to carriers. They manage risk, aggregate demand, and facilitate price discovery.
@@ -31,7 +31,7 @@ Smart contracts automatically handle payment flows, holding funds until delivery
 
 ### 💬 End-to-End Encrypted Messaging
 
-Implements Diffie-Hellman key exchange for secure communication channels. While shipment data and transactions are publicly visible on-chain, private messages between parties are encrypted off-chain, ensuring sensitive delivery instructions and coordination remain confidential.
+Implements Diffie-Hellman key exchange for secure communication channels. While shipment data and transactions are publicly auditable, private messages between parties are encrypted, ensuring sensitive delivery instructions and coordination remain confidential.
 
 ### 🎯 Competitive Bidding Mechanism
 
@@ -41,15 +41,15 @@ Carriers submit offers with custom payment amounts and timeout windows. The mark
 
 Full integration with MapLibre GL for real-time shipment visualization. Supports precise location data (latitude/longitude) with human-readable location names for both origin and destination.
 
-### ⚡ High-Performance Blockchain
+### ⚡ High-Performance Infrastructure
 
-Built on Solana for sub-second transaction finality and minimal fees, making micro-transactions economically viable and enabling real-time logistics coordination.
+Built on high-throughput distributed ledger infrastructure with sub-second transaction finality and minimal fees, making micro-transactions economically viable and enabling real-time logistics coordination.
 
 ## Protocol Architecture
 
 ### Smart Contract Layer (Anchor/Rust)
 
-The on-chain program manages the entire logistics workflow through a series of instructions:
+The distributed ledger program manages the entire logistics workflow through a series of automated instructions:
 
 ```rust
 // User Registration & Identity
@@ -70,13 +70,13 @@ send_message(key, message)  // Exchange encrypted messages
 confirm_delivery()          // Release payment on completion
 ```
 
-### On-Chain Data
+### Immutable Data Records
 
-Shipments store comprehensive details publicly on-chain including geographic coordinates, package dimensions (weight, width, height, depth), handling requirements (priority, fragility), financial terms (price, collateral, penalties), and scheduling information (pickup time, delivery deadline). This transparency enables market efficiency and trust.
+Shipments store comprehensive details in the distributed ledger including geographic coordinates, package dimensions (weight, width, height, depth), handling requirements (priority, fragility), financial terms (price, collateral, penalties), and scheduling information (pickup time, delivery deadline). This transparency enables market efficiency and trust.
 
 ### Frontend Application (SvelteKit)
 
-A modern, responsive web interface built with SvelteKit, TypeScript, and Tailwind CSS. Features interactive mapping with MapLibre GL, Solana wallet integration, and the Anchor TypeScript SDK for seamless blockchain interaction.
+A modern, responsive web interface built with SvelteKit, TypeScript, and Tailwind CSS. Features interactive mapping with MapLibre GL, secure wallet integration, and the Anchor TypeScript SDK for seamless ledger interaction.
 
 ## Workflow Example
 
@@ -118,19 +118,19 @@ A modern, responsive web interface built with SvelteKit, TypeScript, and Tailwin
 
 ### Diffie-Hellman Key Exchange
 
-While shipment details, offers, and transactions are stored transparently on-chain for market efficiency, private communication between parties uses encrypted channels:
+While shipment details, offers, and transactions are stored transparently for market efficiency, private communication between parties uses encrypted channels:
 
 ```
 Carrier generates: (private_c, public_c)
 Shipper generates: (private_s, public_s)
 
-On-chain: Exchange public keys
-Off-chain: Both compute shared_secret
+Exchange: Public keys shared via secure channel
+Compute: Both parties derive shared_secret
          = public_c ^ private_s
          = public_s ^ private_c
 
 AES encryption: encrypt(message, shared_secret)
-Result: Only encrypted messages stored on-chain
+Result: Only encrypted messages stored in ledger
 ```
 
 This hybrid approach provides:
@@ -138,13 +138,13 @@ This hybrid approach provides:
 - Transparent marketplace for price discovery and trust
 - Private messaging for sensitive delivery instructions
 - End-to-end encryption without trusted intermediaries
-- On-chain message history without revealing content
+- Immutable message history without revealing content
 
 ## Technology Stack
 
-### Solana Blockchain
+### Distributed Ledger Infrastructure (Solana)
 
-- **Speed**: ~400ms block time enables real-time logistics updates
+- **Speed**: ~400ms settlement time enables real-time logistics updates
 - **Cost**: Minimal transaction fees make micropayments economically viable
 - **Scalability**: High throughput supports global logistics volume
 - **Anchor Framework**: Type-safe smart contract development with automatic TypeScript SDK generation
@@ -154,13 +154,13 @@ This hybrid approach provides:
 - **Performance**: Minimal runtime overhead with compile-time optimization
 - **Developer Experience**: Reactive framework with less boilerplate
 - **SSR**: Server-side rendering for improved SEO and initial load times
-- **Web3 Integration**: Native Solana wallet adapter support
+- **Secure Integration**: Native cryptographic wallet adapter support
 
 ## Project Structure
 
 ```
 sherpa/
-├── programs/protocol/          # Solana smart contract
+├── programs/protocol/          # Smart contract program
 │   └── src/
 │       ├── actions/            # Instruction handlers
 │       │   ├── shipper/        # Shipper operations
@@ -185,10 +185,10 @@ sherpa/
 │   │   ├── forwarder/          # Forwarder dashboard
 │   │   └── shipmentsMap/       # Map view
 │   ├── stores/                 # State management
-│   │   ├── anchor.ts           # Blockchain connection
+│   │   ├── anchor.ts           # Ledger connection
 │   │   ├── wallet.ts           # Wallet state
 │   │   └── offers.ts           # Offer tracking
-│   └── sdk/                    # Blockchain SDK wrapper
+│   └── sdk/                    # Protocol SDK wrapper
 │
 ├── tests/                      # Integration tests
 │   └── flow.spec.ts            # End-to-end workflow
@@ -204,11 +204,11 @@ Online marketplaces can integrate Sherpa to offer decentralized shipping, reduci
 
 ### 🌍 Cross-Border Trade
 
-International shipments benefit from cryptocurrency payments, eliminating currency conversion fees and banking delays.
+International shipments benefit from programmable settlements, eliminating currency conversion fees and banking delays through automated payment rails.
 
 ### 📦 Supply Chain Transparency
 
-Complete on-chain record of shipment lifecycle provides immutable audit trail for compliance and quality assurance.
+Complete immutable record of shipment lifecycle provides transparent audit trail for compliance and quality assurance.
 
 ### 🏘️ Last-Mile Networks
 
@@ -217,10 +217,6 @@ Local carriers can participate in a global marketplace, creating peer-to-peer de
 ### 🚢 Freight Forwarding
 
 Automates traditional freight forwarding with smart contracts, reducing administrative overhead and settlement delays.
-
-## Screenshots
-
-<!-- Add screenshots here -->
 
 ---
 
